@@ -3,9 +3,7 @@ const shimmer =
 
 export function CardSkeleton() {
   return (
-    <div
-      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
-    >
+    <div className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}>
       <div className="flex p-4">
         <div className="h-5 w-5 rounded-md bg-gray-200" />
         <div className="ml-2 h-6 w-16 rounded-md bg-gray-200 text-sm font-medium" />
@@ -60,9 +58,7 @@ export function InvoiceSkeleton() {
 
 export function LatestInvoicesSkeleton() {
   return (
-    <div
-      className={`${shimmer} relative flex w-full flex-col overflow-hidden md:col-span-4`}
-    >
+    <div className={`${shimmer} relative flex w-full flex-col overflow-hidden md:col-span-4`}>
       <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
         <div className="bg-white px-6">
@@ -84,9 +80,7 @@ export function LatestInvoicesSkeleton() {
 export default function DashboardSkeleton() {
   return (
     <>
-      <div
-        className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`}
-      />
+      <div className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`} />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <CardSkeleton />
         <CardSkeleton />
@@ -187,10 +181,7 @@ export function InvoicesTableSkeleton() {
                 <th scope="col" className="px-3 py-5 font-medium">
                   Status
                 </th>
-                <th
-                  scope="col"
-                  className="relative pb-4 pl-3 pr-6 pt-2 sm:pr-6"
-                >
+                <th scope="col" className="relative pb-4 pl-3 pr-6 pt-2 sm:pr-6">
                   <span className="sr-only">Edit</span>
                 </th>
               </tr>

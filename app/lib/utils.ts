@@ -7,10 +7,7 @@ export const formatCurrency = (amount: number) => {
   });
 };
 
-export const formatDateToLocal = (
-  dateStr: string,
-  locale: string = 'en-US',
-) => {
+export const formatDateToLocal = (dateStr: string, locale: string = 'en-US') => {
   const date = new Date(dateStr);
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
@@ -46,13 +43,5 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
   }
 
-  return [
-    1,
-    '...',
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-    '...',
-    totalPages,
-  ];
+  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
 };

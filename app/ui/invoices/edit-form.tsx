@@ -13,9 +13,9 @@ import { updateInvoice, State } from '@/app/lib/actions';
 import { useActionState } from 'react';
 
 export default function EditInvoiceForm({
-                                          invoice,
-                                          customers,
-                                        }: {
+  invoice,
+  customers,
+}: {
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
@@ -88,9 +88,7 @@ export default function EditInvoiceForm({
         </div>
 
         <fieldset aria-describedby="status-error">
-          <legend className="mb-2 block text-sm font-medium">
-            Set the invoice status
-          </legend>
+          <legend className="mb-2 block text-sm font-medium">Set the invoice status</legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
@@ -138,9 +136,7 @@ export default function EditInvoiceForm({
         </fieldset>
       </div>
       <div id="form-error" aria-live="polite" aria-atomic="true">
-        {state.message && (
-          <p className="mt-2 text-sm text-red-500">{state.message}</p>
-        )}
+        {state.message && <p className="mt-2 text-sm text-red-500">{state.message}</p>}
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link

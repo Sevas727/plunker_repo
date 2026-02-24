@@ -17,7 +17,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
   const [state, formAction] = useActionState(createInvoice, initialState);
 
   return (
-      <form action={formAction}>
+    <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
@@ -44,11 +44,11 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           </div>
           <div id="customer-error" aria-live="polite" aria-atomic="true">
             {state.errors?.customerId &&
-                state.errors.customerId.map((error: string) => (
-                    <p className="mt-2 text-sm text-red-500" key={error}>
-                      {error}
-                    </p>
-                ))}
+              state.errors.customerId.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
 
@@ -72,9 +72,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
         </div>
 
         <fieldset>
-          <legend className="mb-2 block text-sm font-medium">
-            Set the invoice status
-          </legend>
+          <legend className="mb-2 block text-sm font-medium">Set the invoice status</legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
