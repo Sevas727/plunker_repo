@@ -5,21 +5,9 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import { z } from 'zod';
 import { auth } from '@/auth';
 import { fetchTodoOwnerId } from './data';
-
-const TodoSchema = z.object({
-  id: z.string(),
-  title: z.string().min(1, { message: 'Title is required.' }),
-  description: z.string().optional().default(''),
-  status: z.enum(['pending', 'completed'], {
-    invalid_type_error: 'Please select a status.',
-  }),
-});
-
-const CreateTodo = TodoSchema.omit({ id: true, status: true });
-const UpdateTodo = TodoSchema.omit({ id: true });
+import { CreateTodoSchema, UpdateTodoSchema, RegisterSchema } from './schemas';
 
 export type TodoState = {
   errors?: {
@@ -49,7 +37,7 @@ async function checkOwnershipOrAdmin(todoId: string, sessionUserId: string, sess
 export async function createTodo(prevState: TodoState, formData: FormData) {
   const session = await getSessionOrThrow();
 
-  const validatedFields = CreateTodo.safeParse({
+  const validatedFields = CreateTodoSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
   });
@@ -80,7 +68,7 @@ export async function updateTodo(id: string, prevState: TodoState, formData: For
   const session = await getSessionOrThrow();
   await checkOwnershipOrAdmin(id, session.user.id, session.user.role);
 
-  const validatedFields = UpdateTodo.safeParse({
+  const validatedFields = UpdateTodoSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
     status: formData.get('status'),
@@ -132,12 +120,6 @@ export async function authenticate(prevState: string | undefined, formData: Form
     throw error;
   }
 }
-
-const RegisterSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-});
 
 export type RegisterState = {
   errors?: {
