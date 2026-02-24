@@ -14,10 +14,9 @@ export default function ContactsPage() {
         <ContactItem label="GitHub" value="github.com/fedotov" href="https://github.com/fedotov" />
         <ContactItem
           label="LinkedIn"
-          value="linkedin.com/in/fedotov"
-          href="https://linkedin.com/in/fedotov"
+          value="linkedin.com/in/vsevolod-fedotov"
+          href="https://www.linkedin.com/in/vsevolod-fedotov/"
         />
-        <ContactItem label="Telegram" value="@fedotov" href="https://t.me/fedotov" />
       </div>
     </main>
   );
