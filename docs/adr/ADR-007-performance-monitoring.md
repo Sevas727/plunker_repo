@@ -14,7 +14,6 @@ The project needs a performance monitoring strategy to:
 
 - Establish a measurable baseline before adding features (Docker, CI/CD, microservices)
 - Detect performance regressions early in the development cycle
-- Track real-user Core Web Vitals (LCP, CLS, INP) alongside lab metrics
 - Provide actionable bundle size data for optimization decisions
 
 ## Decision
@@ -53,31 +52,13 @@ Lighthouse CI was chosen for automated lab-based performance audits.
 
 Usage: `pnpm analyze` (runs `ANALYZE=true next build`)
 
-### 3. Web Vitals Reporting (`useReportWebVitals`)
+### 3. Web Vitals — deferred to Phase 7
 
-Next.js provides `useReportWebVitals` hook for capturing real-user metrics (RUM).
+Real-user monitoring (RUM) via Web Vitals has limited value while the project runs locally. Tracking metrics like LCP/CLS/INP makes sense only after deployment with real users.
 
-**Architecture:**
+When the project is deployed (Phase 10+), RUM will be added via the chosen observability provider's SDK (e.g., Datadog RUM SDK, Sentry Performance, Vercel Analytics) — not a custom endpoint. These SDKs collect Web Vitals automatically without additional code.
 
-```
-Browser → useReportWebVitals() → sendBeacon(/api/web-vitals) → structured log
-```
-
-- **Client component** (`app/ui/web-vitals.tsx`) mounted in root layout
-- **Development**: logs metrics to console with color-coded ratings (good/needs-improvement/poor)
-- **Production**: sends metrics to `/api/web-vitals` endpoint via `navigator.sendBeacon`
-- **API endpoint** (`app/api/web-vitals/route.ts`): logs structured JSON, ready for integration with log aggregators (Loki, CloudWatch, Datadog)
-
-**Metrics captured:**
-
-| Metric | Type           | Good threshold |
-| ------ | -------------- | -------------- |
-| LCP    | Core Web Vital | < 2500 ms      |
-| FID    | Core Web Vital | < 100 ms       |
-| CLS    | Core Web Vital | < 0.1          |
-| FCP    | Additional     | < 1800 ms      |
-| TTFB   | Additional     | < 800 ms       |
-| INP    | Core Web Vital | < 200 ms       |
+The `useReportWebVitals` hook and `/api/web-vitals` endpoint are currently in the codebase as a placeholder. They will be replaced by the provider SDK in Phase 7 (Monitoring).
 
 ### 4. Pages Audited
 
@@ -93,11 +74,11 @@ Browser → useReportWebVitals() → sendBeacon(/api/web-vitals) → structured 
 
 ### Vercel Analytics
 
-Built-in Web Vitals tracking for Vercel-deployed apps. Not chosen because the project may deploy to AWS (Phase 10), and we want a provider-agnostic solution.
+Built-in Web Vitals tracking for Vercel-deployed apps. Not chosen because the project will deploy to AWS (Phase 10).
 
-### Google Analytics (GA4) `gtag` events
+### Custom `/api/web-vitals` endpoint
 
-Could send Web Vitals as GA events. Not chosen to avoid adding the GA SDK dependency; structured logs are sufficient for this stage.
+Initially implemented, but recognised as premature — real analytics providers (Datadog, Sentry, Vercel) ship their own SDKs that collect Web Vitals automatically. A custom endpoint adds a maintenance burden with no advantage over provider SDKs.
 
 ### Custom Prometheus metrics
 
@@ -109,15 +90,14 @@ Would require a Prometheus instance and pushgateway. Deferred to Phase 7 (Monito
 
 - Quantified performance baseline before feature additions
 - Automated regression detection via Lighthouse CI assertions
-- Real-user metric collection ready for any analytics provider
 - Bundle size visibility for informed optimization decisions
-- Zero runtime cost (Web Vitals uses browser PerformanceObserver API)
 
 ### Negative
 
 - Lighthouse CI adds ~90 seconds to CI pipeline (9 runs × ~10s each)
 - Filesystem-based report storage doesn't scale for historical comparison (addressed in Phase 5 with LHCI Server or temporary-public-storage)
 - `/todos` page not covered in unauthenticated audits
+- No real-user metrics until deployment (Phase 7+)
 
 ### Baseline Results (2026-02-24)
 

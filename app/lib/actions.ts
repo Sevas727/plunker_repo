@@ -5,8 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import { auth } from '@/auth';
-import { fetchTodoOwnerId } from './data';
+import { getSessionOrThrow, checkOwnershipOrAdmin } from './auth-helpers';
 import { CreateTodoSchema, UpdateTodoSchema, RegisterSchema } from './schemas';
 
 export type TodoState = {
@@ -17,22 +16,6 @@ export type TodoState = {
   };
   message: string;
 };
-
-async function getSessionOrThrow() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    throw new Error('Unauthorized');
-  }
-  return session;
-}
-
-async function checkOwnershipOrAdmin(todoId: string, sessionUserId: string, sessionRole: string) {
-  if (sessionRole === 'admin') return;
-  const ownerId = await fetchTodoOwnerId(todoId);
-  if (ownerId !== sessionUserId) {
-    throw new Error('Forbidden: You can only modify your own todos.');
-  }
-}
 
 export async function createTodo(prevState: TodoState, formData: FormData) {
   const session = await getSessionOrThrow();
