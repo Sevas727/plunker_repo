@@ -1,104 +1,120 @@
 'use server';
+import bcrypt from 'bcrypt';
 import sql from './db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-
 import { z } from 'zod';
+import { auth } from '@/auth';
+import { fetchTodoOwnerId } from './data';
 
-const FormSchema = z.object({
+const TodoSchema = z.object({
   id: z.string(),
-  customerId: z.string({
-    invalid_type_error: 'Please select a customer.',
+  title: z.string().min(1, { message: 'Title is required.' }),
+  description: z.string().optional().default(''),
+  status: z.enum(['pending', 'completed'], {
+    invalid_type_error: 'Please select a status.',
   }),
-  amount: z.coerce.number().gt(0, { message: 'Please enter an amount greater than $0.' }),
-  status: z.enum(['pending', 'paid'], {
-    invalid_type_error: 'Please select an invoice status.',
-  }),
-  date: z.string(),
 });
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateTodo = TodoSchema.omit({ id: true, status: true });
+const UpdateTodo = TodoSchema.omit({ id: true });
 
-export type State = {
+export type TodoState = {
   errors?: {
-    customerId?: string[];
-    amount?: string[];
+    title?: string[];
+    description?: string[];
     status?: string[];
   };
-  message?: string | null;
+  message: string;
 };
 
-export async function createInvoice(prevState: State, formData: FormData) {
-  const validatedFields = CreateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
+async function getSessionOrThrow() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized');
+  }
+  return session;
+}
+
+async function checkOwnershipOrAdmin(todoId: string, sessionUserId: string, sessionRole: string) {
+  if (sessionRole === 'admin') return;
+  const ownerId = await fetchTodoOwnerId(todoId);
+  if (ownerId !== sessionUserId) {
+    throw new Error('Forbidden: You can only modify your own todos.');
+  }
+}
+
+export async function createTodo(prevState: TodoState, formData: FormData) {
+  const session = await getSessionOrThrow();
+
+  const validatedFields = CreateTodo.safeParse({
+    title: formData.get('title'),
+    description: formData.get('description'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Todo.',
+    };
+  }
+
+  const { title, description } = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO todos (title, description, user_id)
+      VALUES (${title}, ${description}, ${session.user.id})
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Create Todo.' };
+  }
+
+  revalidatePath('/todos');
+  redirect('/todos');
+}
+
+export async function updateTodo(id: string, prevState: TodoState, formData: FormData) {
+  const session = await getSessionOrThrow();
+  await checkOwnershipOrAdmin(id, session.user.id, session.user.role);
+
+  const validatedFields = UpdateTodo.safeParse({
+    title: formData.get('title'),
+    description: formData.get('description'),
     status: formData.get('status'),
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.',
+      message: 'Missing Fields. Failed to Update Todo.',
     };
   }
 
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+  const { title, description, status } = validatedFields.data;
 
   try {
     await sql`
-            INSERT INTO invoices (customer_id, amount, status, date)
-            VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-        `;
+      UPDATE todos
+      SET title = ${title}, description = ${description}, status = ${status}, updated_at = NOW()
+      WHERE id = ${id}
+    `;
   } catch (error) {
-    return {
-      message: 'Database Error: Failed to Create Invoice.',
-    };
+    return { message: 'Database Error: Failed to Update Todo.' };
   }
 
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  revalidatePath('/todos');
+  redirect('/todos');
 }
 
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+export async function deleteTodo(id: string) {
+  const session = await getSessionOrThrow();
+  await checkOwnershipOrAdmin(id, session.user.id, session.user.role);
 
-export async function updateInvoice(id: string, prevState: State, formData: FormData) {
-  const validatedFields = UpdateInvoice.safeParse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Update Invoice.',
-    };
-  }
-
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
-
-  try {
-    await sql`
-            UPDATE invoices
-            SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-            WHERE id = ${id}
-        `;
-  } catch (error) {
-    return { message: 'Database Error: Failed to Update Invoice.' };
-  }
-
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
-}
-
-export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/invoices');
+  await sql`DELETE FROM todos WHERE id = ${id}`;
+  revalidatePath('/todos');
 }
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
@@ -115,4 +131,60 @@ export async function authenticate(prevState: string | undefined, formData: Form
     }
     throw error;
   }
+}
+
+const RegisterSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+});
+
+export type RegisterState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+  };
+  message: string;
+};
+
+export async function registerUser(prevState: RegisterState, formData: FormData) {
+  const validatedFields = RegisterSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Validation failed.',
+    };
+  }
+
+  const { name, email, password } = validatedFields.data;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    await sql`
+      INSERT INTO users (name, email, password, role)
+      VALUES (${name}, ${email}, ${hashedPassword}, 'user')
+    `;
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message.includes('unique')) {
+      return { message: 'Email already exists.' };
+    }
+    return { message: 'Database Error: Failed to register.' };
+  }
+
+  try {
+    await signIn('credentials', { email, password, redirect: false });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { message: 'Registration successful but auto-login failed. Please log in manually.' };
+    }
+    throw error;
+  }
+
+  redirect('/todos');
 }

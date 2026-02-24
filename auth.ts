@@ -15,8 +15,25 @@ async function getUser(email: string): Promise<User | undefined> {
     throw new Error('Failed to fetch user.');
   }
 }
+
 export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  callbacks: {
+    ...authConfig.callbacks,
+    jwt({ token, user }) {
+      if (user) {
+        const u = user as User;
+        token.id = u.id;
+        token.role = u.role;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      session.user.id = token.id as string;
+      session.user.role = token.role as string;
+      return session;
+    },
+  },
   providers: [
     Credentials({
       async authorize(credentials) {

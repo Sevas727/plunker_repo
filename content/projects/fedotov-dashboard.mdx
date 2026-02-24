@@ -1,0 +1,35 @@
+---
+title: 'Fedotov Dashboard'
+slug: 'fedotov-dashboard'
+description: 'Full-stack todo management application with role-based access control, built with Next.js App Router.'
+tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'NextAuth', 'Tailwind CSS']
+date: '2026-02-01'
+github: 'https://github.com/fedotov'
+order: 1
+---
+
+## Overview
+
+A full-stack web application featuring a public portfolio with MDX-based content and a protected dashboard with todo management capabilities.
+
+## Key Features
+
+- **Authentication & Authorization**: NextAuth 5 with credentials provider, JWT sessions, and two roles (user/admin)
+- **RBAC**: Users manage their own todos; admins have full access with user filtering
+- **Todo CRUD**: Create, read, update, delete with Zod validation and server actions
+- **Pagination & Search**: Server-side pagination with URL-based search parameters
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router, React Server Components)
+- **Language**: TypeScript 5.7
+- **Database**: PostgreSQL (Neon) via `postgres` package
+- **Auth**: NextAuth 5 beta with JWT strategy
+- **Styling**: Tailwind CSS 3.4
+- **Validation**: Zod
+- **Code Quality**: ESLint + Prettier, Husky + lint-staged
+
+## Architecture Decisions
+
+All architectural decisions are documented as ADRs in the `docs/adr/` directory, covering project structure, data model, authentication strategy, and content management approach.

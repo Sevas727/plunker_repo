@@ -1,200 +1,172 @@
 import sql from './db';
-import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  Revenue,
-} from './definitions';
-import { formatCurrency } from './utils';
+import { TodoForm, TodosTable, User } from './definitions';
 
-export async function fetchRevenue() {
+const ITEMS_PER_PAGE = 6;
+
+export async function fetchCardData(userId: string, isAdmin: boolean) {
   try {
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
-    return data;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch revenue data.');
-  }
-}
+    const userFilter = isAdmin ? sql`` : sql`WHERE user_id = ${userId}`;
 
-export async function fetchLatestInvoices() {
-  try {
-    const data = await sql<LatestInvoiceRaw[]>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      ORDER BY invoices.date DESC
-      LIMIT 5`;
+    const totalPromise = sql`SELECT COUNT(*) FROM todos ${userFilter}`;
+    const pendingPromise = sql`SELECT COUNT(*) FROM todos ${userFilter} ${isAdmin ? sql`` : sql`AND`} ${isAdmin ? sql`WHERE` : sql``} status = 'pending'`;
+    const completedPromise = sql`SELECT COUNT(*) FROM todos ${userFilter} ${isAdmin ? sql`` : sql`AND`} ${isAdmin ? sql`WHERE` : sql``} status = 'completed'`;
 
-    const latestInvoices = data.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
-    return latestInvoices;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest invoices.');
-  }
-}
+    const data = await Promise.all([totalPromise, pendingPromise, completedPromise]);
 
-export async function fetchCardData() {
-  try {
-    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
-    const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
-    const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`;
+    const totalTodos = Number(data[0][0].count ?? '0');
+    const pendingTodos = Number(data[1][0].count ?? '0');
+    const completedTodos = Number(data[2][0].count ?? '0');
 
-    const data = await Promise.all([
-      invoiceCountPromise,
-      customerCountPromise,
-      invoiceStatusPromise,
-    ]);
-
-    const numberOfInvoices = Number(data[0][0].count ?? '0');
-    const numberOfCustomers = Number(data[1][0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
-
-    return {
-      numberOfCustomers,
-      numberOfInvoices,
-      totalPaidInvoices,
-      totalPendingInvoices,
-    };
+    return { totalTodos, pendingTodos, completedTodos };
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
   }
 }
 
-const ITEMS_PER_PAGE = 6;
-export async function fetchFilteredInvoices(query: string, currentPage: number) {
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
+export async function fetchRecentTodos(userId: string, isAdmin: boolean) {
   try {
-    const invoices = await sql<InvoicesTable[]>`
-      SELECT
-        invoices.id,
-        invoices.amount,
-        invoices.date,
-        invoices.status,
-        customers.name,
-        customers.email,
-        customers.image_url
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      WHERE
-        customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`} OR
-        invoices.amount::text ILIKE ${`%${query}%`} OR
-        invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
-      ORDER BY invoices.date DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-    `;
+    const data = isAdmin
+      ? await sql<TodosTable[]>`
+          SELECT todos.*, users.name AS user_name, users.email AS user_email
+          FROM todos
+          JOIN users ON todos.user_id = users.id
+          ORDER BY todos.created_at DESC
+          LIMIT 5
+        `
+      : await sql<TodosTable[]>`
+          SELECT todos.*, users.name AS user_name, users.email AS user_email
+          FROM todos
+          JOIN users ON todos.user_id = users.id
+          WHERE todos.user_id = ${userId}
+          ORDER BY todos.created_at DESC
+          LIMIT 5
+        `;
 
-    return invoices;
+    return data;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoices.');
+    throw new Error('Failed to fetch recent todos.');
   }
 }
 
-export async function fetchInvoicesPages(query: string) {
+export async function fetchFilteredTodos(
+  query: string,
+  currentPage: number,
+  userId: string,
+  isAdmin: boolean,
+  filterUserId?: string,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
   try {
-    const data = await sql`SELECT COUNT(*)
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
-    WHERE
-      customers.name ILIKE ${`%${query}%`} OR
-      customers.email ILIKE ${`%${query}%`} OR
-      invoices.amount::text ILIKE ${`%${query}%`} OR
-      invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
-  `;
+    const effectiveUserId = isAdmin ? filterUserId : userId;
+
+    const todos = effectiveUserId
+      ? await sql<TodosTable[]>`
+          SELECT todos.*, users.name AS user_name, users.email AS user_email
+          FROM todos
+          JOIN users ON todos.user_id = users.id
+          WHERE
+            todos.user_id = ${effectiveUserId} AND (
+              todos.title ILIKE ${`%${query}%`} OR
+              todos.description ILIKE ${`%${query}%`} OR
+              todos.status ILIKE ${`%${query}%`}
+            )
+          ORDER BY todos.created_at DESC
+          LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+        `
+      : await sql<TodosTable[]>`
+          SELECT todos.*, users.name AS user_name, users.email AS user_email
+          FROM todos
+          JOIN users ON todos.user_id = users.id
+          WHERE
+            todos.title ILIKE ${`%${query}%`} OR
+            todos.description ILIKE ${`%${query}%`} OR
+            todos.status ILIKE ${`%${query}%`}
+          ORDER BY todos.created_at DESC
+          LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+        `;
+
+    return todos;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch todos.');
+  }
+}
+
+export async function fetchTodosPages(
+  query: string,
+  userId: string,
+  isAdmin: boolean,
+  filterUserId?: string,
+) {
+  try {
+    const effectiveUserId = isAdmin ? filterUserId : userId;
+
+    const data = effectiveUserId
+      ? await sql`
+          SELECT COUNT(*)
+          FROM todos
+          WHERE
+            user_id = ${effectiveUserId} AND (
+              title ILIKE ${`%${query}%`} OR
+              description ILIKE ${`%${query}%`} OR
+              status ILIKE ${`%${query}%`}
+            )
+        `
+      : await sql`
+          SELECT COUNT(*)
+          FROM todos
+          WHERE
+            title ILIKE ${`%${query}%`} OR
+            description ILIKE ${`%${query}%`} OR
+            status ILIKE ${`%${query}%`}
+        `;
 
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
+    throw new Error('Failed to fetch total number of todos.');
   }
 }
 
-export async function fetchInvoiceById(id: string) {
+export async function fetchTodoById(id: string) {
   try {
-    const data = await sql<InvoiceForm[]>`
-      SELECT
-        invoices.id,
-        invoices.customer_id,
-        invoices.amount,
-        invoices.status
-      FROM invoices
-      WHERE invoices.id = ${id};
+    const data = await sql<TodoForm[]>`
+      SELECT id, title, description, status
+      FROM todos
+      WHERE id = ${id}
     `;
 
-    const invoice = data.map((invoice) => ({
-      ...invoice,
-      amount: invoice.amount / 100,
-    }));
-
-    return invoice[0];
+    return data[0];
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    throw new Error('Failed to fetch todo.');
   }
 }
 
-export async function fetchCustomers() {
+export async function fetchTodoOwnerId(id: string): Promise<string | null> {
   try {
-    const customers = await sql<CustomerField[]>`
-      SELECT
-        id,
-        name
-      FROM customers
-      ORDER BY name ASC
+    const data = await sql<{ user_id: string }[]>`
+      SELECT user_id FROM todos WHERE id = ${id}
     `;
-
-    return customers;
-  } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch all customers.');
+    return data[0]?.user_id ?? null;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch todo owner.');
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
+export async function fetchAllUsers() {
   try {
-    const data = await sql<CustomersTableType[]>`
-		SELECT
-		  customers.id,
-		  customers.name,
-		  customers.email,
-		  customers.image_url,
-		  COUNT(invoices.id) AS total_invoices,
-		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
-		FROM customers
-		LEFT JOIN invoices ON customers.id = invoices.customer_id
-		WHERE
-		  customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
-		ORDER BY customers.name ASC
-	  `;
-
-    const customers = data.map((customer) => ({
-      ...customer,
-      total_pending: formatCurrency(customer.total_pending),
-      total_paid: formatCurrency(customer.total_paid),
-    }));
-
-    return customers;
-  } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch customer table.');
+    const data = await sql<Pick<User, 'id' | 'name' | 'email'>[]>`
+      SELECT id, name, email FROM users ORDER BY name ASC
+    `;
+    return data;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch users.');
   }
 }
