@@ -13,6 +13,10 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "analyze": "ANALYZE=true next build",
+    "lighthouse": "lhci autorun",
+    "lighthouse:collect": "lhci collect",
+    "perf:baseline": "pnpm build && lhci autorun",
     "prepare": "husky"
   },
   "dependencies": {
@@ -35,6 +39,8 @@
     "zod": "^3.25.17"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@next/bundle-analyzer": "^16.1.6",
     "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

@@ -13,6 +13,9 @@
 e2e/.auth/user.json
 e2e/.auth/admin.json
 
+# performance
+/.lighthouseci/
+
 # next.js
 /.next/
 /out/
