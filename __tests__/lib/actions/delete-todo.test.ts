@@ -1,8 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { deleteTodo } from '@/app/lib/actions';
+
+vi.mock('next-auth', () => ({
+  AuthError: class AuthError extends Error {
+    type = 'UnknownError';
+  },
+}));
 
 const mockSql = vi.fn();
-vi.mock('@/app/lib/db', () => ({ default: (...args: unknown[]) => mockSql(...args) }));
+vi.mock('@/app/lib/db', () => ({
+  default: (...args: unknown[]) => mockSql(...args),
+}));
 
 const mockAuth = vi.fn();
 vi.mock('@/auth', () => ({
@@ -22,6 +29,8 @@ vi.mock('next/cache', () => ({
 
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 
+const { deleteTodo } = await import('@/app/lib/actions');
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -29,7 +38,12 @@ beforeEach(() => {
 describe('deleteTodo', () => {
   it('deletes and revalidates for owner', async () => {
     mockAuth.mockResolvedValue({
-      user: { id: 'user-1', name: 'Test', email: 'test@test.com', role: 'user' },
+      user: {
+        id: 'user-1',
+        name: 'Test',
+        email: 'test@test.com',
+        role: 'user',
+      },
       expires: '2099-01-01',
     });
     mockFetchTodoOwnerId.mockResolvedValue('user-1');
@@ -43,7 +57,12 @@ describe('deleteTodo', () => {
 
   it('allows admin to delete any todo', async () => {
     mockAuth.mockResolvedValue({
-      user: { id: 'admin-1', name: 'Admin', email: 'admin@test.com', role: 'admin' },
+      user: {
+        id: 'admin-1',
+        name: 'Admin',
+        email: 'admin@test.com',
+        role: 'admin',
+      },
       expires: '2099-01-01',
     });
     mockSql.mockResolvedValue([]);
@@ -56,7 +75,12 @@ describe('deleteTodo', () => {
 
   it('throws Forbidden for non-owner non-admin', async () => {
     mockAuth.mockResolvedValue({
-      user: { id: 'user-1', name: 'Test', email: 'test@test.com', role: 'user' },
+      user: {
+        id: 'user-1',
+        name: 'Test',
+        email: 'test@test.com',
+        role: 'user',
+      },
       expires: '2099-01-01',
     });
     mockFetchTodoOwnerId.mockResolvedValue('other-user');

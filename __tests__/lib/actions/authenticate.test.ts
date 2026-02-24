@@ -1,5 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { authenticate } from '@/app/lib/actions';
+
+// Mock next-auth BEFORE importing actions (it tries to import next/server)
+class MockAuthError extends Error {
+  type: string;
+  constructor(message: string, options?: { type: string }) {
+    super(message);
+    this.type = options?.type ?? 'UnknownError';
+  }
+}
+
+vi.mock('next-auth', () => ({ AuthError: MockAuthError }));
 
 const mockSignIn = vi.fn();
 vi.mock('@/auth', () => ({
@@ -10,6 +20,10 @@ vi.mock('@/auth', () => ({
 vi.mock('@/app/lib/db', () => ({ default: vi.fn() }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
+vi.mock('@/app/lib/data', () => ({ fetchTodoOwnerId: vi.fn() }));
+
+// Import AFTER mocks are set up
+const { authenticate } = await import('@/app/lib/actions');
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -28,9 +42,7 @@ describe('authenticate', () => {
   });
 
   it('returns "Invalid credentials." on CredentialsSignin error', async () => {
-    const { AuthError } = await import('next-auth');
-    const error = new AuthError('test');
-    (error as { type: string }).type = 'CredentialsSignin';
+    const error = new MockAuthError('test', { type: 'CredentialsSignin' });
     mockSignIn.mockRejectedValue(error);
 
     const result = await authenticate(undefined, new FormData());
@@ -38,9 +50,7 @@ describe('authenticate', () => {
   });
 
   it('returns "Something went wrong." on other AuthError', async () => {
-    const { AuthError } = await import('next-auth');
-    const error = new AuthError('test');
-    (error as { type: string }).type = 'OAuthSignInError';
+    const error = new MockAuthError('test', { type: 'OAuthSignInError' });
     mockSignIn.mockRejectedValue(error);
 
     const result = await authenticate(undefined, new FormData());

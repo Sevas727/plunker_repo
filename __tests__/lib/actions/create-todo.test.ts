@@ -1,8 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createTodo } from '@/app/lib/actions';
+
+vi.mock('next-auth', () => ({
+  AuthError: class AuthError extends Error {
+    type = 'UnknownError';
+  },
+}));
 
 const mockSql = vi.fn();
-vi.mock('@/app/lib/db', () => ({ default: (...args: unknown[]) => mockSql(...args) }));
+vi.mock('@/app/lib/db', () => ({
+  default: (...args: unknown[]) => mockSql(...args),
+}));
 
 const mockAuth = vi.fn();
 vi.mock('@/auth', () => ({
@@ -20,6 +27,10 @@ vi.mock('next/navigation', () => ({
   redirect: (...args: unknown[]) => mockRedirect(...args),
 }));
 
+vi.mock('@/app/lib/data', () => ({ fetchTodoOwnerId: vi.fn() }));
+
+const { createTodo } = await import('@/app/lib/actions');
+
 const initialState = { message: '', errors: {} };
 
 function makeFormData(data: Record<string, string>) {
@@ -31,7 +42,12 @@ function makeFormData(data: Record<string, string>) {
 beforeEach(() => {
   vi.clearAllMocks();
   mockAuth.mockResolvedValue({
-    user: { id: 'user-1', name: 'Test', email: 'test@test.com', role: 'user' },
+    user: {
+      id: 'user-1',
+      name: 'Test',
+      email: 'test@test.com',
+      role: 'user',
+    },
     expires: '2099-01-01',
   });
 });

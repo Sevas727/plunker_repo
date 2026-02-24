@@ -1,8 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { registerUser } from '@/app/lib/actions';
+
+class MockAuthError extends Error {
+  type: string;
+  constructor(message: string) {
+    super(message);
+    this.type = 'UnknownError';
+  }
+}
+
+vi.mock('next-auth', () => ({ AuthError: MockAuthError }));
 
 const mockSql = vi.fn();
-vi.mock('@/app/lib/db', () => ({ default: (...args: unknown[]) => mockSql(...args) }));
+vi.mock('@/app/lib/db', () => ({
+  default: (...args: unknown[]) => mockSql(...args),
+}));
 
 const mockSignIn = vi.fn();
 vi.mock('@/auth', () => ({
@@ -21,6 +32,10 @@ const mockHash = vi.fn();
 vi.mock('bcrypt', () => ({
   default: { hash: (...args: unknown[]) => mockHash(...args) },
 }));
+
+vi.mock('@/app/lib/data', () => ({ fetchTodoOwnerId: vi.fn() }));
+
+const { registerUser } = await import('@/app/lib/actions');
 
 const initialState = { message: '', errors: {} };
 
@@ -53,7 +68,11 @@ describe('registerUser', () => {
 
     await registerUser(
       initialState,
-      makeFormData({ name: 'John', email: 'john@test.com', password: '123456' }),
+      makeFormData({
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+      }),
     );
 
     expect(mockHash).toHaveBeenCalledWith('123456', 10);
@@ -65,7 +84,11 @@ describe('registerUser', () => {
 
     await registerUser(
       initialState,
-      makeFormData({ name: 'John', email: 'john@test.com', password: '123456' }),
+      makeFormData({
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+      }),
     );
 
     expect(mockSignIn).toHaveBeenCalledWith('credentials', {
@@ -80,7 +103,11 @@ describe('registerUser', () => {
 
     await registerUser(
       initialState,
-      makeFormData({ name: 'John', email: 'john@test.com', password: '123456' }),
+      makeFormData({
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+      }),
     );
 
     expect(mockRedirect).toHaveBeenCalledWith('/todos');
@@ -91,7 +118,11 @@ describe('registerUser', () => {
 
     const result = await registerUser(
       initialState,
-      makeFormData({ name: 'John', email: 'john@test.com', password: '123456' }),
+      makeFormData({
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+      }),
     );
     expect(result.message).toBe('Email already exists.');
   });
@@ -101,20 +132,26 @@ describe('registerUser', () => {
 
     const result = await registerUser(
       initialState,
-      makeFormData({ name: 'John', email: 'john@test.com', password: '123456' }),
+      makeFormData({
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+      }),
     );
     expect(result.message).toBe('Database Error: Failed to register.');
   });
 
   it('returns auto-login failure message on AuthError during signIn', async () => {
     mockSql.mockResolvedValue([]);
-    const { AuthError } = await import('next-auth');
-    const error = new AuthError('login failed');
-    mockSignIn.mockRejectedValue(error);
+    mockSignIn.mockRejectedValue(new MockAuthError('login failed'));
 
     const result = await registerUser(
       initialState,
-      makeFormData({ name: 'John', email: 'john@test.com', password: '123456' }),
+      makeFormData({
+        name: 'John',
+        email: 'john@test.com',
+        password: '123456',
+      }),
     );
     expect(result.message).toContain('auto-login failed');
   });
