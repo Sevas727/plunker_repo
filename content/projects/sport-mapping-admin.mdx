@@ -1,0 +1,44 @@
+---
+title: 'Sport Mapping Admin'
+slug: 'sport-mapping-admin'
+description: 'Admin dashboard for managing sports event data mappings — entity mapping, translations, settlements, feed monitoring, and audit logs for a betting platform.'
+tags: ['Vue 3', 'JavaScript', 'Pinia', 'Webpack 5', 'Module Federation', 'AG-Grid Enterprise', 'Ant Design']
+date: '2023-09-01'
+order: 11
+---
+
+## Overview
+
+An administrative dashboard for managing sports data mappings within a betting platform. Operators use it to map unmapped sports entities (events, markets, outcomes, periods) to standardized definitions, manage translations, monitor feed performance, and track system activity through audit logs.
+
+_Source code is proprietary._
+
+## Key Features
+
+- **Entity Mapping**: Map unmapped sports events, markets, outcomes, and periods to standardized definitions
+- **Data Management**: CRUD for sports, categories, tournaments, competitors, widgets, and forms
+- **Multi-Language Translations**: Manage entity translations across multiple locales with dynamic loading
+- **Settlements & Transactions**: View and manage settlement data
+- **Manual Event Operations**: Event creation, recovery, and correction tools
+- **Feed Monitoring**: Track feed performance and data provider health
+- **Audit Logs**: Full activity tracking for compliance and debugging
+- **Advanced Data Grids**: AG-Grid Enterprise with row grouping, server-side row models, master-detail views, and Excel/CSV export
+
+## Tech Stack
+
+- **Framework**: Vue 3.3
+- **Language**: JavaScript (ES2015+)
+- **State Management**: Pinia with localStorage persistence
+- **Build**: Webpack 5 with Module Federation (micro-frontend architecture)
+- **UI Library**: Ant Design Vue 4.2
+- **Data Grids**: AG-Grid Enterprise 32.2
+- **Styling**: SASS
+- **HTTP**: Axios
+- **i18n**: Vue I18n 9.2
+- **Testing**: Jest
+- **Code Quality**: ESLint (Airbnb), Snyk (security)
+- **Deployment**: Docker, GitLab CI/CD, Helm charts (Kubernetes)
+
+## Architecture
+
+Part of the Atlaslive micro-frontend ecosystem. Uses Webpack Module Federation to share components and services with the main BackOffice application. Cloud-deployed with environment-specific configurations (dev/stage/prod) and Kubernetes orchestration via Helm.

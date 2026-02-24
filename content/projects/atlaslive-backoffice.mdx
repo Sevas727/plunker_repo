@@ -1,0 +1,45 @@
+---
+title: 'Atlaslive BackOffice'
+slug: 'atlaslive-backoffice'
+description: 'Enterprise admin panel for an iGaming platform — client management, payments, sportsbook, casino, CRM, and reporting with micro-frontend architecture.'
+tags: ['Vue 3', 'TypeScript', 'Pinia', 'Webpack 5', 'Module Federation', 'AG-Grid Enterprise', 'Ant Design']
+date: '2024-01-01'
+order: 9
+---
+
+## Overview
+
+A large-scale admin panel powering an online gaming platform (casino, sportsbook, payments). Built with Vue 3 and TypeScript, it serves as the central management hub for operators to handle clients, process payments, configure sports events, manage casino games, run CRM campaigns, and generate reports.
+
+_Source code is proprietary._
+
+## Key Features
+
+- **Multi-Tenant Architecture**: Project switching for managing multiple brands from a single interface
+- **Micro-Frontend Architecture**: Webpack 5 Module Federation with remote modules (Retail, RMT, Web Terminals)
+- **Enterprise Data Grids**: AG-Grid Enterprise with custom cell renderers, Excel/CSV export, row grouping, master-detail views, and advanced filtering/aggregation for massive datasets
+- **Real-Time Updates**: WebSocket-based live data feeds for payments, events, and player activity
+- **Role-Based Access Control**: Granular permissions for admin and operator roles
+- **Workflow Builder**: Visual node editor (Rete.js) for configuring business rules and automation
+- **Multi-Language Support**: Full i18n with 9+ languages
+- **Dark/Light Theme**: Switchable UI themes
+- **PDF Generation**: On-demand report generation with PDFMake and html2pdf.js
+- **Application Monitoring**: Datadog RUM integration for production observability
+
+## Tech Stack
+
+- **Framework**: Vue 3.3 (Composition API)
+- **Language**: TypeScript 5.1
+- **State Management**: Pinia with localStorage persistence
+- **Build**: Webpack 5 with Module Federation
+- **UI Library**: Ant Design Vue 4.2
+- **Data Grids**: AG-Grid Enterprise 32.2 + AG Charts 4.2
+- **Styling**: SCSS with CSS modules
+- **HTTP**: Axios
+- **Testing**: Jest + Vue Test Utils
+- **Code Quality**: ESLint (Airbnb), Husky, Snyk (security)
+- **Monitoring**: Datadog RUM
+
+## Architecture
+
+27 feature modules organized by domain (client, payments, casino, sportsbook, billing, CRM, etc.) with a shared component library. Module Federation enables independent deployment of sub-applications while maintaining a cohesive user experience.

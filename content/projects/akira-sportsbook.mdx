@@ -1,0 +1,45 @@
+---
+title: 'Akira Sportsbook Platform'
+slug: 'akira-sportsbook'
+description: 'White-label sports betting and online casino frontend platform with live betting, tournaments, theming system, and real-time data feeds.'
+tags: ['React 18', 'TypeScript', 'Webpack 5', 'SCSS', 'WebSocket']
+date: '2023-06-01'
+order: 10
+---
+
+## Overview
+
+Akira is a white-label sports betting and online casino platform designed to power multiple branded websites. It supports real-time live betting, casino games, tournaments, and comprehensive user account management. A theming system enables visual customization for different operator domains.
+
+_Source code is proprietary._
+
+## Key Features
+
+- **Live Betting Center**: Real-time odds updates and in-play wagering via WebSocket subscriptions
+- **Sportsbook**: Full sports betting interface with betslip, accumulators, and event browsing
+- **Casino Integration**: Embedded casino games with categorized lobbies
+- **Tournament System**: Player tournaments with leaderboards and prize distribution
+- **White-Label Theming**: Skin system supporting multiple branded domains (different colors, logos, layouts per operator)
+- **User Management**: Sign-up, sign-in, email verification, KYC, profile management
+- **Payment Processing**: Deposits, withdrawals, QR code payments, transaction history
+- **Analytics Integration**: Google Tag Manager, Hotjar for user behavior tracking
+- **reCAPTCHA Protection**: Bot prevention on authentication flows
+- **Performance**: Virtualized lists (react-window, react-virtuoso) for large datasets, infinite scroll
+
+## Tech Stack
+
+- **Framework**: React 18.2
+- **Language**: TypeScript (strict mode)
+- **Routing**: React Router v5
+- **Build**: Webpack 5 with custom build system
+- **Styling**: SCSS with CSS Modules, PostCSS
+- **In-House Framework**: Atlas (@atlas/core, @atlas/components, @atlas/routing, @atlas/payments, @atlas/ui)
+- **Forms**: react-hook-form via @atlas/react-forms
+- **Real-Time**: WebSocket subscriptions for live odds and events
+- **Security**: DOMPurify (HTML sanitization), crypto-js, JWT decode
+- **Testing**: Jest + React Testing Library
+- **Code Quality**: ESLint, Prettier, TypeScript strict
+
+## Architecture
+
+40+ React components organized by feature domain (Sportsbook, Casino, Betslip, ClientProfile, Tournaments, LiveCenter). Uses an in-house Atlas framework for shared UI components, routing, forms, and payment processing across multiple Atlaslive products.

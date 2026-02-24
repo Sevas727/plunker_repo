@@ -1,0 +1,36 @@
+---
+title: 'RoControl: Smart TV Remote'
+slug: 'rocontrol'
+description: 'iOS app that turns iPhone/iPad into a smart remote for Roku TV devices with touchpad navigation, keyboard input, and channel management.'
+tags: ['React Native', 'TypeScript', 'Firebase', 'WebSocket', 'iOS']
+date: '2025-01-01'
+live: 'https://apps.apple.com/ua/app/rocontrol-smart-tv-remote/id6755905935'
+order: 2
+---
+
+## Overview
+
+RoControl is a React Native mobile app published on the App Store that transforms an iPhone or iPad into a full-featured remote control for Roku TV devices. It communicates with Roku devices over the local network using the External Control Protocol (ECP).
+
+## Key Features
+
+- **Automatic Device Discovery**: Uses SSDP protocol to detect Roku devices on the local Wi-Fi network
+- **Dual Transport**: WebSocket (ECP-2) for real-time control with automatic fallback to HTTP ECP
+- **Swipeable Remote**: Intuitive touchpad with gesture-based navigation
+- **Smart Keyboard**: Type searches, passwords, and URLs directly from your phone
+- **Channel Management**: Browse and one-tap launch installed streaming apps
+- **Subscription Model**: Monthly ($1.99) and yearly ($19.99) plans via StoreKit with 7-day free trial
+
+## Tech Stack
+
+- **Framework**: React Native 0.82
+- **Language**: JavaScript / TypeScript
+- **Backend**: Firebase (Firestore, Cloud Functions, Analytics, Crashlytics)
+- **Communication**: WebSocket (ECP-2 protocol with SHA1 challenge-response auth), HTTP ECP
+- **Device Discovery**: SSDP over UDP
+- **Monetization**: In-App Purchases (IAP) with server-side receipt validation
+- **UI**: React Native Animatable, Swiper, Linear Gradient, Vector Icons
+
+## Architecture
+
+The app uses a dual-transport mechanism: WebSocket connections for real-time, low-latency control with automatic fallback to HTTP when WebSocket fails. Device authentication uses a SHA1-based challenge-response handshake over ECP-2.

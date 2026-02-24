@@ -1,8 +1,8 @@
 ---
 title: 'Fedotov Dashboard'
 slug: 'fedotov-dashboard'
-description: 'Full-stack todo management application with role-based access control, built with Next.js App Router.'
-tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'NextAuth', 'Tailwind CSS']
+description: 'Full-stack todo management application with REST API, GraphQL, role-based access control, and comprehensive test coverage. Built with Next.js App Router.'
+tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'NextAuth', 'GraphQL', 'Apollo Server', 'Tailwind CSS']
 date: '2026-02-01'
 github: 'https://github.com/fedotov'
 order: 1
@@ -10,15 +10,19 @@ order: 1
 
 ## Overview
 
-A full-stack web application featuring a public portfolio with MDX-based content and a protected dashboard with todo management capabilities.
+A full-stack web application featuring a public portfolio with MDX-based content and a protected dashboard with todo management capabilities. Serves as a training ground for Lead JavaScript Engineer skills — testing, CI/CD, Docker, Kubernetes, AWS, and microservices.
 
 ## Key Features
 
 - **Authentication & Authorization**: NextAuth 5 with credentials provider, JWT sessions, and two roles (user/admin)
 - **RBAC**: Users manage their own todos; admins have full access with user filtering
 - **Todo CRUD**: Create, read, update, delete with Zod validation and server actions
-- **Pagination & Search**: Server-side pagination with URL-based search parameters
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **REST API**: Full versioned API (`/api/v1/`) with pagination, search, ownership checks, and proper HTTP status codes
+- **GraphQL API**: Apollo Server on `/api/graphql` with Query/Mutation support, reusing the same data layer
+- **Pagination & Search**: Server-side pagination with URL-based search and debounced input
+- **Responsive Design**: Mobile-first with Tailwind CSS — dual rendering (mobile cards + desktop table)
+- **Testing**: 137 unit/integration/component tests (Vitest) + 19 E2E tests (Playwright)
+- **Performance Monitoring**: Lighthouse CI budgets, bundle analyzer, Web Vitals baseline
 
 ## Tech Stack
 
@@ -26,10 +30,13 @@ A full-stack web application featuring a public portfolio with MDX-based content
 - **Language**: TypeScript 5.7
 - **Database**: PostgreSQL (Neon) via `postgres` package
 - **Auth**: NextAuth 5 beta with JWT strategy
+- **API**: REST (Next.js Route Handlers) + GraphQL (Apollo Server + @as-integrations/next)
 - **Styling**: Tailwind CSS 3.4
 - **Validation**: Zod
+- **Testing**: Vitest + React Testing Library, Playwright
+- **Performance**: Lighthouse CI, @next/bundle-analyzer
 - **Code Quality**: ESLint + Prettier, Husky + lint-staged
 
 ## Architecture Decisions
 
-All architectural decisions are documented as ADRs in the `docs/adr/` directory, covering project structure, data model, authentication strategy, and content management approach.
+All architectural decisions are documented as ADRs in the `docs/adr/` directory, covering project structure, data model, authentication, content management, testing strategy, E2E testing, and performance monitoring.

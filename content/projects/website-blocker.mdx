@@ -1,0 +1,37 @@
+---
+title: 'Website & App Blocker'
+slug: 'website-blocker'
+description: 'Native iOS app built with Swift and SwiftUI for blocking distracting websites and apps with smart triggers, strict mode, and screen time analytics.'
+tags: ['Swift', 'SwiftUI', 'Firebase', 'StoreKit 2', 'iOS']
+date: '2025-02-01'
+order: 3
+---
+
+## Overview
+
+A native iOS productivity app that helps users block distracting websites and apps. Built entirely in Swift with SwiftUI, leveraging Apple's Screen Time APIs (FamilyControls, ManagedSettings, DeviceActivity) for system-level enforcement that cannot be bypassed.
+
+## Key Features
+
+- **Website Blocking**: Domain blocking with substring and regex pattern matching
+- **App Blocking**: Block apps by bundle ID or category (Social, Games, Dating, etc.)
+- **Granular Feature Blocking**: Block specific features like Instagram Reels, YouTube Shorts, TikTok FYP
+- **Smart Triggers**: Time-based schedules, location-based geofencing, Wi-Fi SSID detection, usage limits
+- **Strict Mode**: Escalating unlock challenges — PIN, timed cooldown, math problems, NFC tag scan, Pomodoro cycles
+- **Screen Time Analytics**: Daily/weekly/monthly reports, productivity scores, streak counters
+- **Multi-Device Sync**: Firestore-backed settings synchronization across devices
+- **Subscription**: Monthly, yearly, and lifetime plans via StoreKit 2 with 3-day free trial
+
+## Tech Stack
+
+- **Language**: Swift (iOS 17+)
+- **UI**: SwiftUI with @Observable macro, NavigationStack
+- **Backend**: Firebase (Auth, Firestore, Cloud Functions, Crashlytics, Analytics)
+- **Auth**: Apple Sign-In, Google Sign-In, Email/Password via Firebase Auth
+- **Payments**: StoreKit 2 with server-side receipt validation
+- **System APIs**: FamilyControls, ManagedSettings, DeviceActivity, EventKit, CoreLocation
+- **Extensions**: Shield Configuration, Shield Action, Device Activity Monitor, Content Blocker
+
+## Architecture
+
+Uses Apple's Screen Time framework for system-level app and website blocking that persists even when the app is not running. Multiple app extensions handle background monitoring, blocked screen customization, and content filtering. Firebase serves as the sync layer for multi-device settings and subscription management.

@@ -1,0 +1,49 @@
+---
+title: 'Crypto Arbitrage Bot'
+slug: 'crypto-arbitrage-bot'
+description: 'Automated cryptocurrency arbitrage trading system with real-time order book monitoring across multiple exchanges, paired with a Chrome extension for order interception.'
+tags: ['Node.js', 'WebSocket', 'Vue.js', 'Chrome Extension', 'SQLite']
+date: '2024-06-01'
+order: 4
+---
+
+## Overview
+
+A two-part system for cryptocurrency arbitrage trading: a Node.js server that monitors order books across multiple exchanges and automatically executes trades when profitable spreads are detected, paired with a Chrome extension that intercepts and relays trading data from exchange web interfaces.
+
+## Server — Node.js Arbitrage Engine
+
+### Key Features
+
+- **Multi-Exchange Support**: Integrates with Bitget, Kucoin Futures, and MEXC via CCXT library
+- **Real-Time Order Book Monitoring**: WebSocket-based price feeds across exchanges
+- **Automated Arbitrage Detection**: Identifies profitable spreads above 0.60% threshold
+- **Trade Execution**: Automatic buy/sell orders when spread targets are met
+- **Position Management**: Tracks open positions with P&L calculations
+- **Funding Fee Monitoring**: Tracks futures funding rates for strategy optimization
+- **Data Persistence**: SQLite databases for trade history, position logs, and arbitrage data
+- **Excel Reporting**: Generates analysis reports via ExcelJS
+
+### Tech Stack
+
+- **Runtime**: Node.js (ES Modules)
+- **Framework**: Express.js
+- **Exchange API**: CCXT (unified multi-exchange library)
+- **Database**: SQLite (better-sqlite3) — separate DBs for trades, positions, arbitrage data
+- **Real-Time**: WebSocket (ws) for order book streaming
+- **Templating**: Pug for web dashboard
+
+## Chrome Extension — Order Interceptor
+
+### Key Features
+
+- **Request Interception**: Captures order creation requests on MEXC futures platform
+- **WebSocket Relay**: Streams intercepted order data to the backend server in real-time
+- **Toggle Control**: Popup UI to activate/deactivate interception
+
+### Tech Stack
+
+- **Frontend**: Vue.js 2
+- **Build**: Laravel Mix (Webpack)
+- **Styling**: SASS
+- **Manifest**: Chrome Extension Manifest v3
