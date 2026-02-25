@@ -1,0 +1,79 @@
+# Observability stack: OTel Collector → Jaeger + Prometheus + Loki → Grafana
+#
+# Usage:
+#   docker compose -f docker/observability/docker-compose.yml up -d
+#
+# UIs:
+#   Grafana:  http://localhost:3001 (admin/admin)
+#   Jaeger:   http://localhost:16686
+#   Prometheus: http://localhost:9090
+#
+# App config:
+#   OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+
+services:
+  # ── OpenTelemetry Collector ──────────────────────────────────────
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.96.0
+    restart: unless-stopped
+    volumes:
+      - ./otel-collector/config.yml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - '4318:4318' # OTLP HTTP receiver (app sends here)
+      - '8889:8889' # Prometheus exporter (Prometheus scrapes here)
+
+  # ── Jaeger (tracing UI) ─────────────────────────────────────────
+  jaeger:
+    image: jaegertracing/all-in-one:1.54
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: 'true'
+    ports:
+      - '16686:16686' # Jaeger UI
+      - '4317:4317' # OTLP gRPC (collector sends here)
+
+  # ── Prometheus (metrics) ─────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+
+  # ── Loki (logs) ─────────────────────────────────────────────────
+  loki:
+    image: grafana/loki:3.0.0
+    restart: unless-stopped
+    ports:
+      - '3100:3100'
+    command: -config.file=/etc/loki/local-config.yaml
+
+  # ── Promtail (log collector → Loki) ──────────────────────────────
+  promtail:
+    image: grafana/promtail:3.0.0
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./promtail/config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+  # ── Grafana (dashboards) ─────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.4.1
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - '3001:3000'
+    depends_on:
+      - prometheus
+      - jaeger
+      - loki

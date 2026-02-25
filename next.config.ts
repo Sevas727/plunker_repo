@@ -35,6 +35,17 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  serverExternalPackages: [
+    'pino',
+    'pino-pretty',
+    '@opentelemetry/sdk-node',
+    '@opentelemetry/auto-instrumentations-node',
+    '@opentelemetry/exporter-trace-otlp-http',
+    '@opentelemetry/exporter-metrics-otlp-http',
+    '@opentelemetry/sdk-metrics',
+    '@opentelemetry/resources',
+    '@opentelemetry/semantic-conventions',
+  ],
   async headers() {
     return [
       {

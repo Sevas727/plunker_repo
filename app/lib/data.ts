@@ -1,5 +1,6 @@
 import sql from './db';
 import { TodoForm, TodosTable, User } from './definitions';
+import { logger } from './logger';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -19,7 +20,7 @@ export async function fetchCardData(userId: string, isAdmin: boolean) {
 
     return { totalTodos, pendingTodos, completedTodos };
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch card data.');
   }
 }
@@ -45,7 +46,7 @@ export async function fetchRecentTodos(userId: string, isAdmin: boolean) {
 
     return data;
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch recent todos.');
   }
 }
@@ -90,7 +91,7 @@ export async function fetchFilteredTodos(
 
     return todos;
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch todos.');
   }
 }
@@ -127,7 +128,7 @@ export async function fetchTodosPages(
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch total number of todos.');
   }
 }
@@ -142,7 +143,7 @@ export async function fetchTodoById(id: string) {
 
     return data[0];
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch todo.');
   }
 }
@@ -154,7 +155,7 @@ export async function fetchTodoOwnerId(id: string): Promise<string | null> {
     `;
     return data[0]?.user_id ?? null;
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch todo owner.');
   }
 }
@@ -166,7 +167,7 @@ export async function fetchAllUsers() {
     `;
     return data;
   } catch (error) {
-    console.error('Database Error:', error);
+    logger.error({ err: error }, 'Database Error');
     throw new Error('Failed to fetch users.');
   }
 }

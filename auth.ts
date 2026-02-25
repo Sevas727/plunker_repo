@@ -6,13 +6,14 @@ import { z } from 'zod';
 import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
 import sql from '@/app/lib/db';
+import { logger } from '@/app/lib/logger';
 
 async function getUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User[]>`SELECT * FROM users WHERE email=${email}`;
     return user[0];
   } catch (error) {
-    console.error('Failed to fetch user:', error);
+    logger.error({ err: error }, 'Failed to fetch user');
     throw new Error('Failed to fetch user.');
   }
 }
@@ -75,7 +76,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           if (passwordsMatch) return user;
         }
 
-        console.log('Invalid credentials');
+        logger.warn('Invalid credentials attempt');
         return null;
       },
     }),
