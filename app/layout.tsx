@@ -3,7 +3,7 @@ import { inter } from '@/app/ui/fonts';
 import { Metadata } from 'next';
 import Navbar from '@/app/ui/navbar';
 import { WebVitals } from '@/app/ui/web-vitals';
-import CursorGlow from '@/app/ui/cursor-glow';
+import ParticleField from '@/app/ui/particle-field';
 
 export const metadata: Metadata = {
   title: {
@@ -19,8 +19,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} relative text-gray-100 antialiased`}>
         {/* Background layer (lowest) */}
         <div className="fixed inset-0 -z-20 bg-black" />
-        {/* Cursor glow layer (between bg and content) */}
-        <CursorGlow />
+        {/* Interactive particle field (between bg and content) */}
+        <ParticleField />
         <WebVitals />
         <Navbar />
         {children}
