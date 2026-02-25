@@ -61,7 +61,9 @@ describe('createTodo', () => {
   });
 
   it('inserts todo and redirects on valid input', async () => {
-    mockSql.mockResolvedValue([]);
+    mockSql
+      .mockResolvedValueOnce([{ count: 0 }]) // COUNT check
+      .mockResolvedValueOnce([]); // INSERT
 
     await createTodo(initialState, makeFormData({ title: 'New Todo', description: 'Desc' }));
 
@@ -79,7 +81,9 @@ describe('createTodo', () => {
   });
 
   it('returns database error message on SQL failure', async () => {
-    mockSql.mockRejectedValue(new Error('SQL fail'));
+    mockSql
+      .mockResolvedValueOnce([{ count: 0 }]) // COUNT check passes
+      .mockRejectedValueOnce(new Error('SQL fail')); // INSERT fails
 
     const result = await createTodo(initialState, makeFormData({ title: 'Test', description: '' }));
     expect(result).toBeDefined();
