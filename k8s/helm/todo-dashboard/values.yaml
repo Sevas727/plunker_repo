@@ -1,0 +1,63 @@
+replicaCount: 2
+
+image:
+  repository: todo-dashboard
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: todo-dashboard.local
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilization: 70
+  targetMemoryUtilization: 80
+
+pdb:
+  enabled: true
+  minAvailable: 1
+
+env:
+  NODE_ENV: production
+  PORT: "3000"
+
+secrets: {}
+  # DATABASE_URL: ""
+  # AUTH_SECRET: ""
+  # AUTH_GITHUB_ID: ""
+  # AUTH_GITHUB_SECRET: ""
+
+probes:
+  readiness:
+    path: /api/health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  liveness:
+    path: /api/health
+    initialDelaySeconds: 30
+    periodSeconds: 30
+  startup:
+    path: /api/health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 12
