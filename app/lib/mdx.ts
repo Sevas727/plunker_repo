@@ -11,8 +11,12 @@ export type ProjectMeta = {
   tags: string[];
   date: string;
   image?: string;
+  images?: string[];
+  video?: string;
   github?: string;
   live?: string;
+  appStore?: string;
+  googlePlay?: string;
   order: number;
 };
 
@@ -36,8 +40,12 @@ export function getAllProjects(): ProjectMeta[] {
         tags: data.tags || [],
         date: data.date || '',
         image: data.image,
+        images: data.images || [],
+        video: data.video,
         github: data.github,
         live: data.live,
+        appStore: data.appStore,
+        googlePlay: data.googlePlay,
         order: data.order ?? 999,
       } as ProjectMeta;
     });
@@ -63,8 +71,12 @@ export function getProjectBySlug(slug: string): { meta: ProjectMeta; content: st
       tags: data.tags || [],
       date: data.date || '',
       image: data.image,
+      images: data.images || [],
+      video: data.video,
       github: data.github,
       live: data.live,
+      appStore: data.appStore,
+      googlePlay: data.googlePlay,
       order: data.order ?? 999,
     },
     content,
