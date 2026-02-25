@@ -78,7 +78,7 @@ Total: **19 E2E tests** (including 1 setup).
 The todos page has both mobile cards (`md:hidden`) and a desktop table (`hidden md:table`). On Desktop Chrome viewport, the mobile elements are hidden. Locators target the visible desktop table:
 
 ```typescript
-await expect(page.locator('table').getByText('Todo Title')).toBeVisible();
+await expect(page.locator("table").getByText("Todo Title")).toBeVisible();
 ```
 
 #### Serial CRUD Tests
@@ -90,7 +90,7 @@ The CRUD tests use `test.describe.configure({ mode: 'serial' })` with shared sta
 Search tests verify URL updates after the 300ms debounce:
 
 ```typescript
-await searchInput.fill('Deploy');
+await searchInput.fill("Deploy");
 await expect(page).toHaveURL(/query=Deploy/, { timeout: 5_000 });
 ```
 

@@ -57,7 +57,7 @@ The `sql` tagged template from `postgres` is mocked as a `vi.fn()` that returns 
 
 ```typescript
 const mockSql = vi.fn();
-vi.mock('@/app/lib/db', () => ({
+vi.mock("@/app/lib/db", () => ({
   default: (...args: unknown[]) => mockSql(...args),
 }));
 ```
@@ -67,12 +67,12 @@ vi.mock('@/app/lib/db', () => ({
 `next-auth` must be mocked before importing any module that transitively imports it, because `next-auth` internally imports `next/server` which does not exist in jsdom. The pattern uses `vi.mock()` hoisting + dynamic `await import()`:
 
 ```typescript
-vi.mock('next-auth', () => ({
+vi.mock("next-auth", () => ({
   AuthError: class AuthError extends Error {
-    type = 'UnknownError';
+    type = "UnknownError";
   },
 }));
-const { createTodo } = await import('@/app/lib/actions');
+const { createTodo } = await import("@/app/lib/actions");
 ```
 
 #### Next.js modules

@@ -41,14 +41,14 @@ Each project MDX file has frontmatter:
 
 ```yaml
 ---
-title: 'Project Name'
-slug: 'project-slug'
-description: 'Short description for cards'
-tags: ['Next.js', 'TypeScript']
-date: '2025-01-01'
-image: '/projects/preview.png'
-github: 'https://github.com/...'
-live: 'https://live-url.com'
+title: "Project Name"
+slug: "project-slug"
+description: "Short description for cards"
+tags: ["Next.js", "TypeScript"]
+date: "2025-01-01"
+image: "/projects/preview.png"
+github: "https://github.com/..."
+live: "https://live-url.com"
 order: 1
 ---
 Full MDX content here...
