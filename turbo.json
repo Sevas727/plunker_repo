@@ -3,7 +3,14 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "POSTGRES_URL",
+        "AUTH_SECRET",
+        "AUTH_URL",
+        "GITHUB_ID",
+        "GITHUB_SECRET"
+      ]
     },
     "dev": {
       "cache": false,
