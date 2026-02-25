@@ -21,6 +21,12 @@ vi.mock('@/app/lib/db', () => ({ default: vi.fn() }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 vi.mock('@/app/lib/data', () => ({ fetchTodoOwnerId: vi.fn() }));
+vi.mock('next/headers', () => ({
+  headers: vi.fn().mockResolvedValue(new Map([['x-forwarded-for', '127.0.0.1']])),
+}));
+vi.mock('@/app/lib/rate-limit', () => ({
+  rateLimit: vi.fn().mockReturnValue({ success: true, remaining: 4 }),
+}));
 
 // Import AFTER mocks are set up
 const { authenticate } = await import('@/app/lib/actions');

@@ -5,8 +5,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { headers } from 'next/headers';
 import { getSessionOrThrow, checkOwnershipOrAdmin } from './auth-helpers';
 import { CreateTodoSchema, UpdateTodoSchema, RegisterSchema } from './schemas';
+import { rateLimit } from './rate-limit';
 
 export type TodoState = {
   errors?: {
@@ -89,6 +91,18 @@ export async function deleteTodo(id: string) {
 }
 
 export async function authenticate(prevState: string | undefined, formData: FormData) {
+  // Rate limiting by IP
+  const headersList = await headers();
+  const ip =
+    headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    headersList.get('x-real-ip') ||
+    'unknown';
+
+  const { success } = rateLimit(ip);
+  if (!success) {
+    return 'Too many login attempts. Please try again in 15 minutes.';
+  }
+
   try {
     await signIn('credentials', formData);
   } catch (error) {

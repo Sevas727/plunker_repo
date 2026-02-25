@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import GitHub from 'next-auth/providers/github';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
 import type { User } from '@/app/lib/definitions';
@@ -16,15 +17,39 @@ async function getUser(email: string): Promise<User | undefined> {
   }
 }
 
-export const { auth, signIn, signOut } = NextAuth({
+async function findOrCreateOAuthUser(
+  name: string | null | undefined,
+  email: string,
+): Promise<User> {
+  let user = await getUser(email);
+  if (!user) {
+    await sql`
+      INSERT INTO users (name, email, password, role)
+      VALUES (${name || 'GitHub User'}, ${email}, '', 'user')
+    `;
+    user = await getUser(email);
+    if (!user) throw new Error('Failed to create OAuth user.');
+  }
+  return user;
+}
+
+export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
   callbacks: {
     ...authConfig.callbacks,
-    jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        const u = user as User;
-        token.id = u.id;
-        token.role = u.role;
+        if (account?.provider === 'github') {
+          // OAuth sign-in — look up or create user in our DB
+          const dbUser = await findOrCreateOAuthUser(user.name, user.email!);
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+        } else {
+          // Credentials sign-in — user comes from authorize()
+          const u = user as User;
+          token.id = u.id;
+          token.role = u.role;
+        }
       }
       return token;
     },
@@ -53,6 +78,10 @@ export const { auth, signIn, signOut } = NextAuth({
         console.log('Invalid credentials');
         return null;
       },
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
 });
