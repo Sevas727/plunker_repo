@@ -66,6 +66,10 @@ async function seedTodos() {
 }
 
 export async function GET() {
+  if (process.env.NODE_ENV === 'production') {
+    return Response.json({ error: 'Seed is disabled in production' }, { status: 403 });
+  }
+
   try {
     await seedUsers();
     await seedTodos();

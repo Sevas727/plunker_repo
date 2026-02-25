@@ -37,6 +37,12 @@ export async function createTodo(prevState: TodoState, formData: FormData) {
   const { title, description } = validatedFields.data;
 
   try {
+    const [{ count }] =
+      await sql`SELECT COUNT(*)::int AS count FROM todos WHERE user_id = ${session.user.id}`;
+    if (count >= 100) {
+      return { message: 'Maximum 100 todos per user. Delete some before creating new ones.' };
+    }
+
     await sql`
       INSERT INTO todos (title, description, user_id)
       VALUES (${title}, ${description}, ${session.user.id})

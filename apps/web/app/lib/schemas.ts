@@ -3,8 +3,15 @@ import { z } from 'zod';
 // --- Todo Schemas ---
 export const TodoSchema = z.object({
   id: z.string(),
-  title: z.string().min(1, { message: 'Title is required.' }),
-  description: z.string().optional().default(''),
+  title: z
+    .string()
+    .min(1, { message: 'Title is required.' })
+    .max(255, { message: 'Title must be at most 255 characters.' }),
+  description: z
+    .string()
+    .max(2000, { message: 'Description must be at most 2000 characters.' })
+    .optional()
+    .default(''),
   status: z.enum(['pending', 'completed'], {
     invalid_type_error: 'Please select a status.',
   }),

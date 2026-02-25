@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import sql from '@/app/lib/db';
 import { fetchTodoById, fetchTodoOwnerId } from '@/app/lib/data';
 import { UpdateTodoSchema } from '@/app/lib/schemas';
+import { rateLimitApi, getClientIp } from '@/app/lib/rate-limit';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -10,6 +11,14 @@ type RouteContext = { params: Promise<{ id: string }> };
  * GET /api/v1/todos/:id
  */
 export async function GET(request: NextRequest, context: RouteContext) {
+  const ip = await getClientIp();
+  if (!rateLimitApi(ip).success) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMITED', message: 'Too many requests.' } },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -56,6 +65,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
  * Body (JSON): { title: string, description?: string, status: 'pending' | 'completed' }
  */
 export async function PUT(request: NextRequest, context: RouteContext) {
+  const ip = await getClientIp();
+  if (!rateLimitApi(ip).success) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMITED', message: 'Too many requests.' } },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -133,6 +150,14 @@ export async function PUT(request: NextRequest, context: RouteContext) {
  * DELETE /api/v1/todos/:id
  */
 export async function DELETE(request: NextRequest, context: RouteContext) {
+  const ip = await getClientIp();
+  if (!rateLimitApi(ip).success) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMITED', message: 'Too many requests.' } },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(

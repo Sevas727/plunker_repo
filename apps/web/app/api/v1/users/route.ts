@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { fetchAllUsers } from '@/app/lib/data';
+import { rateLimitApi, getClientIp } from '@/app/lib/rate-limit';
 
 /**
  * GET /api/v1/users
@@ -8,6 +9,14 @@ import { fetchAllUsers } from '@/app/lib/data';
  * Admin only. Returns list of users (id, name, email).
  */
 export async function GET() {
+  const ip = await getClientIp();
+  if (!rateLimitApi(ip).success) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMITED', message: 'Too many requests.' } },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(

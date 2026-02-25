@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import sql from '@/app/lib/db';
 import { fetchFilteredTodos, fetchTodosPages } from '@/app/lib/data';
 import { CreateTodoSchema } from '@/app/lib/schemas';
+import { rateLimitApi, getClientIp } from '@/app/lib/rate-limit';
 
 /**
  * GET /api/v1/todos
@@ -13,6 +14,14 @@ import { CreateTodoSchema } from '@/app/lib/schemas';
  *   - userId   (string)  — filter by user (admin only)
  */
 export async function GET(request: NextRequest) {
+  const ip = await getClientIp();
+  if (!rateLimitApi(ip).success) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMITED', message: 'Too many requests.' } },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -51,6 +60,14 @@ export async function GET(request: NextRequest) {
  * Body (JSON): { title: string, description?: string }
  */
 export async function POST(request: NextRequest) {
+  const ip = await getClientIp();
+  if (!rateLimitApi(ip).success) {
+    return NextResponse.json(
+      { error: { code: 'RATE_LIMITED', message: 'Too many requests.' } },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -86,6 +103,15 @@ export async function POST(request: NextRequest) {
   const { title, description } = validated.data;
 
   try {
+    const [{ count }] =
+      await sql`SELECT COUNT(*)::int AS count FROM todos WHERE user_id = ${session.user.id}`;
+    if (count >= 100) {
+      return NextResponse.json(
+        { error: { code: 'LIMIT_REACHED', message: 'Maximum 100 todos per user.' } },
+        { status: 403 },
+      );
+    }
+
     const result = await sql`
       INSERT INTO todos (title, description, user_id)
       VALUES (${title}, ${description ?? ''}, ${session.user.id})
