@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build output
+**/.next
+
+# Version control
+.git
+.gitignore
+
+# Testing
+**/e2e
+**/__tests__
+**/coverage
+**/test-results
+**/playwright-report
+**/playwright.config.ts
+**/vitest.config.ts
+
+# Performance / CI
+.lighthouseci
+lighthouserc.js
+
+# Environment files
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+**/docker/
+
+# IDE / OS
+.vscode
+.idea
+*.swp
+.DS_Store
+
+# Documentation
+*.md
+docs/
+
+# Husky / CI
+.husky
+.github
+.claude
