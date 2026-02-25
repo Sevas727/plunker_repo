@@ -5,7 +5,7 @@ import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon } from '@heroicons/react/2
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@repo/ui';
 import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
+import { authenticate, signInWithGitHub } from '@/app/lib/actions';
 import { useSearchParams } from 'next/navigation';
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -87,8 +87,7 @@ export default function LoginForm() {
       </div>
 
       {/* GitHub OAuth */}
-      <form action="/api/auth/signin/github" method="POST" className="px-6 pb-4">
-        <input type="hidden" name="callbackUrl" value={callbackUrl} />
+      <form action={signInWithGitHub} className="px-6 pb-4">
         <button
           type="submit"
           className="flex w-full items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"

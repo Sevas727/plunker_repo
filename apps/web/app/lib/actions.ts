@@ -124,6 +124,10 @@ export async function authenticate(prevState: string | undefined, formData: Form
   }
 }
 
+export async function signInWithGitHub() {
+  await signIn('github', { redirectTo: '/todos' });
+}
+
 export type RegisterState = {
   errors?: {
     name?: string[];

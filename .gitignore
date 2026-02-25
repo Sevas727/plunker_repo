@@ -27,6 +27,7 @@ e2e/.auth/admin.json
 .DS_Store
 *.pem
 .idea
+.claude
 
 # debug
 npm-debug.log*
