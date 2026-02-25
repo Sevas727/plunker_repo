@@ -21,7 +21,7 @@ export default function NavbarMobile({
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-50 border-t border-white/10 bg-black/80 px-4 pb-4 pt-2 backdrop-blur-xl">
+        <div className="absolute left-0 right-0 top-full z-50 h-[calc(100dvh-57px)] overflow-y-auto bg-black px-4 pb-4 pt-2">
           <Link
             href="/"
             className="block py-2 text-sm text-white/70 hover:text-white"
