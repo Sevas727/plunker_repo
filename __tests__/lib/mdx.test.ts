@@ -58,6 +58,77 @@ describe('getAllProjects', () => {
     const projects = getAllProjects();
     expect(projects[0].slug).toBe('my-project');
   });
+
+  it('parses youtube field', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReaddirSync.mockReturnValue(['game.mdx']);
+    mockReadFileSync.mockReturnValue(
+      '---\ntitle: Game\nyoutube: https://www.youtube.com/watch?v=abc123\n---\nContent',
+    );
+
+    const projects = getAllProjects();
+    expect(projects[0].youtube).toBe('https://www.youtube.com/watch?v=abc123');
+  });
+
+  it('parses steam field', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReaddirSync.mockReturnValue(['game.mdx']);
+    mockReadFileSync.mockReturnValue(
+      '---\ntitle: Game\nsteam: https://store.steampowered.com/app/123/Game/\n---\nContent',
+    );
+
+    const projects = getAllProjects();
+    expect(projects[0].steam).toBe('https://store.steampowered.com/app/123/Game/');
+  });
+
+  it('parses appStore and googlePlay fields', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReaddirSync.mockReturnValue(['mobile-app.mdx']);
+    mockReadFileSync.mockReturnValue(
+      '---\ntitle: Mobile App\nappStore: https://apps.apple.com/app/id123\ngooglePlay: https://play.google.com/store/apps/details?id=com.example\n---\nContent',
+    );
+
+    const projects = getAllProjects();
+    expect(projects[0].appStore).toBe('https://apps.apple.com/app/id123');
+    expect(projects[0].googlePlay).toBe(
+      'https://play.google.com/store/apps/details?id=com.example',
+    );
+  });
+
+  it('parses images array', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReaddirSync.mockReturnValue(['project.mdx']);
+    mockReadFileSync.mockReturnValue(
+      '---\ntitle: Project\nimages:\n  - /img/01.jpg\n  - /img/02.jpg\n  - /img/03.jpg\n---\nContent',
+    );
+
+    const projects = getAllProjects();
+    expect(projects[0].images).toEqual(['/img/01.jpg', '/img/02.jpg', '/img/03.jpg']);
+  });
+
+  it('parses video field', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReaddirSync.mockReturnValue(['project.mdx']);
+    mockReadFileSync.mockReturnValue('---\ntitle: Project\nvideo: /videos/demo.mp4\n---\nContent');
+
+    const projects = getAllProjects();
+    expect(projects[0].video).toBe('/videos/demo.mp4');
+  });
+
+  it('returns undefined for missing optional fields', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReaddirSync.mockReturnValue(['minimal.mdx']);
+    mockReadFileSync.mockReturnValue('---\ntitle: Minimal\n---\nContent');
+
+    const projects = getAllProjects();
+    expect(projects[0].youtube).toBeUndefined();
+    expect(projects[0].steam).toBeUndefined();
+    expect(projects[0].appStore).toBeUndefined();
+    expect(projects[0].googlePlay).toBeUndefined();
+    expect(projects[0].image).toBeUndefined();
+    expect(projects[0].video).toBeUndefined();
+    expect(projects[0].images).toEqual([]);
+  });
 });
 
 describe('getProjectBySlug', () => {
@@ -86,6 +157,37 @@ describe('getProjectBySlug', () => {
 
     const result = getProjectBySlug('my-slug');
     expect(result!.meta.slug).toBe('my-slug');
+  });
+
+  it('parses all new media fields', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue(
+      [
+        '---',
+        'title: Full Project',
+        'youtube: https://youtu.be/xyz789',
+        'steam: https://store.steampowered.com/app/456/',
+        'appStore: https://apps.apple.com/app/id456',
+        'googlePlay: https://play.google.com/store/apps/details?id=com.test',
+        'video: /videos/trailer.mp4',
+        'image: /projects/full/card.webp',
+        'images:',
+        '  - /projects/full/01.jpg',
+        '  - /projects/full/02.jpg',
+        '---',
+        '# Full Project',
+      ].join('\n'),
+    );
+
+    const result = getProjectBySlug('full-project');
+    expect(result).not.toBeNull();
+    expect(result!.meta.youtube).toBe('https://youtu.be/xyz789');
+    expect(result!.meta.steam).toBe('https://store.steampowered.com/app/456/');
+    expect(result!.meta.appStore).toBe('https://apps.apple.com/app/id456');
+    expect(result!.meta.googlePlay).toBe('https://play.google.com/store/apps/details?id=com.test');
+    expect(result!.meta.video).toBe('/videos/trailer.mp4');
+    expect(result!.meta.image).toBe('/projects/full/card.webp');
+    expect(result!.meta.images).toEqual(['/projects/full/01.jpg', '/projects/full/02.jpg']);
   });
 });
 

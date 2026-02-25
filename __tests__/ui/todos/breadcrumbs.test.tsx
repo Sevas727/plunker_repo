@@ -37,13 +37,13 @@ describe('Breadcrumbs', () => {
   it('applies active styling to active breadcrumb', () => {
     render(<Breadcrumbs breadcrumbs={breadcrumbs} />);
     const activeLi = screen.getByText('Create').closest('li');
-    expect(activeLi).toHaveClass('text-gray-900');
+    expect(activeLi).toHaveClass('text-white');
   });
 
   it('applies inactive styling to non-active breadcrumb', () => {
     render(<Breadcrumbs breadcrumbs={breadcrumbs} />);
     const inactiveLi = screen.getByText('Todos').closest('li');
-    expect(inactiveLi).toHaveClass('text-gray-500');
+    expect(inactiveLi).toHaveClass('text-white/40');
   });
 
   it('has correct link hrefs', () => {

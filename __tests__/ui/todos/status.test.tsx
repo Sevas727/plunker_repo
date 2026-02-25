@@ -11,8 +11,8 @@ describe('TodoStatus', () => {
   it('applies gray styling for pending', () => {
     const { container } = render(<TodoStatus status="pending" />);
     const span = container.querySelector('span');
-    expect(span).toHaveClass('bg-gray-100');
-    expect(span).toHaveClass('text-gray-500');
+    expect(span).toHaveClass('bg-white/10');
+    expect(span).toHaveClass('text-white/40');
   });
 
   it('renders "Completed" text for completed status', () => {
