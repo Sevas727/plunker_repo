@@ -8,21 +8,27 @@ export default async function Navbar() {
   const isLoggedIn = !!session?.user;
 
   return (
-    <nav className="bg-blue-600 text-white">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-white/5 text-white backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
             <AppLogo />
           </Link>
           <div className="hidden items-center gap-6 md:flex">
-            <Link href="/" className="text-sm hover:text-blue-200">
+            <Link href="/" className="text-sm text-white/70 transition-colors hover:text-white">
               Home
             </Link>
-            <Link href="/contacts" className="text-sm hover:text-blue-200">
+            <Link
+              href="/contacts"
+              className="text-sm text-white/70 transition-colors hover:text-white"
+            >
               Contacts
             </Link>
             {isLoggedIn && (
-              <Link href="/todos" className="text-sm hover:text-blue-200">
+              <Link
+                href="/todos"
+                className="text-sm text-white/70 transition-colors hover:text-white"
+              >
                 Todos
               </Link>
             )}
@@ -32,9 +38,9 @@ export default async function Navbar() {
         <div className="hidden items-center gap-4 md:flex">
           {isLoggedIn ? (
             <>
-              <span className="text-sm">
+              <span className="text-sm text-white/70">
                 {session.user.name}{' '}
-                <span className="rounded bg-blue-500 px-2 py-0.5 text-xs">{session.user.role}</span>
+                <span className="rounded bg-white/10 px-2 py-0.5 text-xs">{session.user.role}</span>
               </span>
               <form
                 action={async () => {
@@ -44,7 +50,7 @@ export default async function Navbar() {
               >
                 <button
                   type="submit"
-                  className="rounded-md bg-blue-500 px-3 py-1.5 text-sm hover:bg-blue-400"
+                  className="rounded-md bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20"
                 >
                   Logout
                 </button>
@@ -54,13 +60,13 @@ export default async function Navbar() {
             <>
               <Link
                 href="/login"
-                className="rounded-md bg-blue-500 px-3 py-1.5 text-sm hover:bg-blue-400"
+                className="rounded-md bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="rounded-md bg-white px-3 py-1.5 text-sm text-blue-600 hover:bg-gray-100"
+                className="rounded-md bg-white/90 px-3 py-1.5 text-sm text-black transition-colors hover:bg-white"
               >
                 Register
               </Link>

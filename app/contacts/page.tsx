@@ -11,7 +11,11 @@ export default function ContactsPage() {
       <h1 className={`${lusitana.className} mb-8 text-4xl font-bold`}>Contacts</h1>
       <div className="space-y-6">
         <ContactItem label="Email" value="sevas727@gmail.com" href="mailto:sevas727@gmail.com" />
-        <ContactItem label="GitHub" value="github.com/fedotov" href="https://github.com/fedotov" />
+        <ContactItem
+          label="GitHub"
+          value="github.com/Sevas727"
+          href="https://github.com/Sevas727"
+        />
         <ContactItem
           label="LinkedIn"
           value="linkedin.com/in/vsevolod-fedotov"
@@ -24,13 +28,13 @@ export default function ContactsPage() {
 
 function ContactItem({ label, value, href }: { label: string; value: string; href: string }) {
   return (
-    <div className="flex items-center gap-4 rounded-lg border border-gray-200 p-4">
-      <span className="w-24 text-sm font-medium text-gray-500">{label}</span>
+    <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-4 transition-all duration-300 hover:border-white/[0.12] hover:bg-white/[0.06]">
+      <span className="w-24 text-sm font-medium text-gray-400">{label}</span>
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-600 hover:underline"
+        className="text-blue-400 hover:underline"
       >
         {value}
       </a>

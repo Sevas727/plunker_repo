@@ -2,6 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── CSS Custom Properties ─────────────────────────── */
+@layer base {
+  :root {
+    --accent: 56 152 255;
+    --accent-cyan: 34 211 238;
+    --accent-purple: 192 132 252;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: rgba(var(--accent), 0.3);
+  }
+}
+
+/* ── Utility classes ───────────────────────────────── */
+@layer utilities {
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      rgb(var(--accent)) 0%,
+      rgb(var(--accent-cyan)) 50%,
+      rgb(var(--accent-purple)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Gradient border on hover (cards) */
+  .border-gradient-hover {
+    position: relative;
+  }
+  .border-gradient-hover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgb(var(--accent)) 0%,
+      rgb(var(--accent-cyan)) 50%,
+      rgb(var(--accent-purple)) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .border-gradient-hover:hover::before {
+    opacity: 1;
+  }
+}
+
+/* ── Prose overrides ─────────────────────────────────── */
+.prose {
+  --tw-prose-body: #a3a3a3;
+  --tw-prose-headings: #ededed;
+  --tw-prose-links: rgb(var(--accent));
+  --tw-prose-code: #ededed;
+  --tw-prose-pre-bg: rgba(255, 255, 255, 0.03);
+  --tw-prose-pre-code: #ededed;
+}
+
+/* ── Reduced motion ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ── Number input resets ───────────────────────────── */
 input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;

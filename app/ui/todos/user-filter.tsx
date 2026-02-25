@@ -21,7 +21,7 @@ export default function UserFilter({ users }: { users: Pick<User, 'id' | 'name' 
 
   return (
     <select
-      className="rounded-md border border-gray-200 py-2 pl-3 pr-8 text-sm outline-2"
+      className="rounded-md border border-white/10 bg-white/5 py-2 pl-3 pr-8 text-sm text-white/90 outline-2"
       defaultValue={searchParams.get('userId') ?? ''}
       onChange={(e) => handleChange(e.target.value)}
     >

@@ -15,7 +15,10 @@ export function CreateTodo() {
 
 export function UpdateTodo({ id }: { id: string }) {
   return (
-    <Link href={`/todos/${id}/edit`} className="rounded-md border p-2 hover:bg-gray-100">
+    <Link
+      href={`/todos/${id}/edit`}
+      className="rounded-md border border-white/10 p-2 hover:bg-white/10"
+    >
       <PencilIcon className="w-5" />
     </Link>
   );
@@ -26,7 +29,7 @@ export function DeleteTodo({ id }: { id: string }) {
 
   return (
     <form action={deleteTodoWithId}>
-      <button type="submit" className="rounded-md border p-2 hover:bg-gray-100">
+      <button type="submit" className="rounded-md border border-white/10 p-2 hover:bg-white/10">
         <span className="sr-only">Delete</span>
         <TrashIcon className="w-5" />
       </button>

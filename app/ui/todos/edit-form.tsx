@@ -13,7 +13,7 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
 
   return (
     <form action={formAction}>
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+      <div className="rounded-md bg-white/[0.03] p-4 md:p-6">
         <div className="mb-4">
           <label htmlFor="title" className="mb-2 block text-sm font-medium">
             Title
@@ -24,7 +24,7 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
             type="text"
             defaultValue={todo.title}
             placeholder="Enter todo title"
-            className="peer block w-full rounded-md border border-gray-200 py-2 pl-3 text-sm outline-2 placeholder:text-gray-500"
+            className="peer block w-full rounded-md border border-white/10 bg-white/5 py-2 pl-3 text-sm text-white/90 outline-2 placeholder:text-white/30"
             required
           />
           {state.errors?.title && (
@@ -42,7 +42,7 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
             defaultValue={todo.description}
             placeholder="Enter description (optional)"
             rows={3}
-            className="peer block w-full rounded-md border border-gray-200 py-2 pl-3 text-sm outline-2 placeholder:text-gray-500"
+            className="peer block w-full rounded-md border border-white/10 bg-white/5 py-2 pl-3 text-sm text-white/90 outline-2 placeholder:text-white/30"
           />
           {state.errors?.description && (
             <p className="mt-2 text-sm text-red-500">{state.errors.description[0]}</p>
@@ -51,7 +51,7 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
 
         <fieldset className="mb-4">
           <legend className="mb-2 block text-sm font-medium">Status</legend>
-          <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
+          <div className="rounded-md border border-white/10 bg-white/5 px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
@@ -60,11 +60,11 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
                   type="radio"
                   value="pending"
                   defaultChecked={todo.status === 'pending'}
-                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  className="h-4 w-4 cursor-pointer border-white/10 bg-white/5 text-gray-600 focus:ring-2"
                 />
                 <label
                   htmlFor="pending"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
+                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/60"
                 >
                   Pending
                 </label>
@@ -76,7 +76,7 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
                   type="radio"
                   value="completed"
                   defaultChecked={todo.status === 'completed'}
-                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  className="h-4 w-4 cursor-pointer border-white/10 bg-white/5 text-gray-600 focus:ring-2"
                 />
                 <label
                   htmlFor="completed"
@@ -97,7 +97,7 @@ export default function EditTodoForm({ todo }: { todo: TodoForm }) {
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/todos"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          className="flex h-10 items-center rounded-lg bg-white/10 px-4 text-sm font-medium text-white/60 transition-colors hover:bg-white/20"
         >
           Cancel
         </Link>

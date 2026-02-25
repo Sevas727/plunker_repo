@@ -13,8 +13,10 @@ export type ProjectMeta = {
   image?: string;
   images?: string[];
   video?: string;
+  youtube?: string;
   github?: string;
   live?: string;
+  steam?: string;
   appStore?: string;
   googlePlay?: string;
   order: number;
@@ -42,8 +44,10 @@ export function getAllProjects(): ProjectMeta[] {
         image: data.image,
         images: data.images || [],
         video: data.video,
+        youtube: data.youtube,
         github: data.github,
         live: data.live,
+        steam: data.steam,
         appStore: data.appStore,
         googlePlay: data.googlePlay,
         order: data.order ?? 999,
@@ -73,8 +77,10 @@ export function getProjectBySlug(slug: string): { meta: ProjectMeta; content: st
       image: data.image,
       images: data.images || [],
       video: data.video,
+      youtube: data.youtube,
       github: data.github,
       live: data.live,
+      steam: data.steam,
       appStore: data.appStore,
       googlePlay: data.googlePlay,
       order: data.order ?? 999,
