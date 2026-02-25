@@ -1,5 +1,4 @@
-import Breadcrumbs from '@/app/ui/todos/breadcrumbs';
-import CreateTodoForm from '@/app/ui/todos/create-form';
+import { Breadcrumbs, CreateTodoForm } from '@repo/todo-features';
 
 export default function Page() {
   return (

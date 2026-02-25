@@ -1,9 +1,6 @@
 import { lusitana } from '@/app/ui/fonts';
-import Search from '@/app/ui/search';
-import Pagination from '@/app/ui/pagination';
-import TodosTableComponent from '@/app/ui/todos/table';
-import { CreateTodo } from '@/app/ui/todos/buttons';
-import UserFilter from '@/app/ui/todos/user-filter';
+import { Search, Pagination } from '@repo/ui';
+import { TodosTable as TodosTableComponent, CreateTodo, UserFilter } from '@repo/todo-features';
 import CardWrapper from '@/app/ui/dashboard/cards';
 import { fetchFilteredTodos, fetchTodosPages, fetchAllUsers, fetchCardData } from '@/app/lib/data';
 import { auth } from '@/auth';

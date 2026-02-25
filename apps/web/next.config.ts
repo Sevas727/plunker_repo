@@ -35,6 +35,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  transpilePackages: ['@repo/ui', '@repo/todo-features'],
   serverExternalPackages: [
     'pino',
     'pino-pretty',

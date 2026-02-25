@@ -1,6 +1,6 @@
 import { lusitana } from '@/app/ui/fonts';
 import { formatDateToLocal } from '@/app/lib/utils';
-import TodoStatus from '@/app/ui/todos/status';
+import { TodoStatus } from '@repo/todo-features';
 import { TodosTable } from '@/app/lib/definitions';
 
 export default function RecentTodos({
