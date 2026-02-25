@@ -24,6 +24,10 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Dummy build-time env vars (Zod validates at module load; real values injected at runtime)
+ENV POSTGRES_URL=postgres://build:build@localhost:5432/build
+ENV AUTH_SECRET=build-time-placeholder
+
 RUN pnpm turbo build --filter=@repo/web
 
 # ── Stage 3: runner ───────────────────────────────────────────
