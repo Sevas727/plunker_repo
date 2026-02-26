@@ -48,7 +48,7 @@
     "react": "latest",
     "react-dom": "latest",
     "require-in-the-middle": "^8.0.1",
-    "tailwindcss": "3.4.17",
+    "tailwindcss": "4.2.1",
     "typescript": "5.7.3",
     "use-debounce": "^10.0.4",
     "zod": "^3.25.17"
