@@ -14,7 +14,7 @@ export default function ContactsPage() {
         <ContactItem
           label="GitHub"
           value="github.com/Sevas727"
-          href="https://github.com/Sevas727"
+          href="https://github.com/Sevas727/plunker_repo"
         />
         <ContactItem
           label="LinkedIn"
