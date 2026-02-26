@@ -1,5 +1,5 @@
 # ── Stage 1: deps ─────────────────────────────────────────────
-FROM node:20-alpine AS deps
+FROM node:25-alpine AS deps
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -13,7 +13,7 @@ COPY packages/todo-features/package.json ./packages/todo-features/package.json
 RUN pnpm install --frozen-lockfile
 
 # ── Stage 2: builder ──────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -31,7 +31,7 @@ ENV AUTH_SECRET=build-time-placeholder
 RUN pnpm turbo build --filter=@repo/web
 
 # ── Stage 3: runner ───────────────────────────────────────────
-FROM node:20-alpine AS runner
+FROM node:25-alpine AS runner
 
 WORKDIR /app
 
