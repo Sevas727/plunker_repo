@@ -1,4 +1,4 @@
-# Todo Dashboard
+# Fedotov Vsevolod Portfolio
 
 Full-stack todo management application built with Next.js App Router, TypeScript, and PostgreSQL.
 
