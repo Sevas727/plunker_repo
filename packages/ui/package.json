@@ -10,7 +10,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "clsx": "^2.1.1",
-    "use-debounce": "^10.0.4"
+    "use-debounce": "^10.1.0"
   },
   "devDependencies": {
     "@types/react": "*",
