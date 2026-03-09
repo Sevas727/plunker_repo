@@ -82,7 +82,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Seed database
-        run: psql "$POSTGRES_URL" -f apps/web/docker/init-db/01-seed.sql
+        run: psql "$POSTGRES_URL" -f docker/init-db/01-seed.sql
 
       - name: Install Playwright browsers
         run: pnpm --filter @repo/web exec playwright install --with-deps chromium

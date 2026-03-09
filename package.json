@@ -9,7 +9,12 @@
     "typecheck": "turbo run typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:up": "docker compose up db -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up db -d",
+    "db:seed": "docker compose exec db psql -U postgres -d nextjs -f /docker-entrypoint-initdb.d/01-seed.sql",
+    "db:connect": "docker compose exec db psql -U postgres -d nextjs"
   },
   "devDependencies": {
     "eslint": "^9.39.3",
