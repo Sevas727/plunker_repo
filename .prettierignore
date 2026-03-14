@@ -5,3 +5,4 @@ build
 pnpm-lock.yaml
 k8s/helm/**/templates/**
 .turbo
+apps/web/public/projects/
