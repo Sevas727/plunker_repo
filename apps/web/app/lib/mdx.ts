@@ -19,6 +19,7 @@ export type ProjectMeta = {
   steam?: string;
   appStore?: string;
   googlePlay?: string;
+  iframe?: string;
   order: number;
 };
 
@@ -50,6 +51,7 @@ export function getAllProjects(): ProjectMeta[] {
         steam: data.steam,
         appStore: data.appStore,
         googlePlay: data.googlePlay,
+        iframe: data.iframe,
         order: data.order ?? 999,
       } as ProjectMeta;
     });
@@ -83,6 +85,7 @@ export function getProjectBySlug(slug: string): { meta: ProjectMeta; content: st
       steam: data.steam,
       appStore: data.appStore,
       googlePlay: data.googlePlay,
+      iframe: data.iframe,
       order: data.order ?? 999,
     },
     content,

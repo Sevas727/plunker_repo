@@ -53,17 +53,30 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
   const youtubeId = meta.youtube ? getYouTubeId(meta.youtube) : null;
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-12">
+    <main className={`mx-auto max-w-4xl px-6 ${meta.iframe ? 'py-4' : 'py-12'}`}>
       <Link
         href="/#projects"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-white"
+        className={`${meta.iframe ? 'mb-3' : 'mb-8'} inline-flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-white`}
       >
         <ArrowLeftIcon className="h-4 w-4" />
         Back to all projects
       </Link>
 
+      {/* Embedded game */}
+      {meta.iframe && (
+        <div className="relative mb-4 aspect-[5/4] w-full overflow-hidden rounded-xl bg-black">
+          <iframe
+            src={meta.iframe}
+            title={meta.title}
+            className="absolute inset-0 h-full w-full"
+            style={{ border: 0 }}
+            allow="autoplay; fullscreen"
+          />
+        </div>
+      )}
+
       {/* Hero image */}
-      {meta.image && (
+      {!meta.iframe && meta.image && (
         <div className="relative mb-8 aspect-[2/1] w-full overflow-hidden rounded-xl bg-white/5">
           <Image
             src={meta.image}

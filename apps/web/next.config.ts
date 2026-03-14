@@ -7,7 +7,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const securityHeaders = [
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
-  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
@@ -24,11 +24,12 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "font-src 'self'",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
-      "connect-src 'self'",
+      "worker-src 'self' blob:",
+      "connect-src 'self' data: blob:",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
-      "frame-ancestors 'none'",
+      "frame-ancestors 'self'",
     ].join('; '),
   },
 ];
